@@ -1,13 +1,21 @@
 export async function queryHuggingFace(prompt: string) {
   const response = await fetch(
-    "https://api-inference.huggingface.co/models/gpt2",
+    "https://router.huggingface.co/v1/chat/completions",
     {
       method: "POST",
       headers: {
         Authorization: `Bearer ${import.meta.env.VITE_HF_API_KEY}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ inputs: prompt }),
+      body: JSON.stringify({
+        messages: [
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+        model: import.meta.env.VITE_HF_MODEL,
+      }),
     }
   );
 
@@ -15,6 +23,5 @@ export async function queryHuggingFace(prompt: string) {
     throw new Error("HuggingFace API error");
   }
 
-  const result = await response.json();
-  return result[0]?.generated_text ?? "Error";
+  return await response.json();
 }

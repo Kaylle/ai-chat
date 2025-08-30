@@ -8,12 +8,12 @@ export const navMenu = [
   },
   {
     title: "Dress for weading",
-    url: "/",
+    url: "/w",
     group: 'Yesterday'
   },
   {
     title: "Resume for work in LA",
-    url: "/settings",
+    url: "/settingsw",
     group: 'Jule 25'
   },
   {

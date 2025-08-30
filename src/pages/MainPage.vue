@@ -4,7 +4,8 @@
       <ScrollArea class="w-full px-4" style="height: calc(100vh - 240px)">
         <div
           v-if="messages.length === 0"
-          class="flex flex-col gap-2 text-center"
+          class="flex flex-col gap-2 text-center justify-center"
+          style="height: calc(100vh - 240px)"
         >
           <h2 class="text-2xl font-bold tracking-tight">
             Hi, there <PhHandWaving class="inline-block"/>
@@ -16,27 +17,27 @@
         <div
           class="flex flex-col gap-4 pb-4"
           v-for="message in messages"
-          :key="message.text"
+          :key="message.content"
         >
           <Card
             class="w-auto max-w-[60vw]"
-            :class="message.type?'mr-auto':'bg-accent ml-auto'"
+            :class="message.role==='user'?'mr-auto':'bg-accent ml-auto'"
           >
-            <CardContent>
-              {{ message.text }}
-            </CardContent>
+            <CardContent v-html="marked.parse(message.content)"/>
             <CardFooter>
               <Button
                 variant="outline"
-                @click="copyToClipboard(message.text)"
+                @click="copyToClipboard(message.content)"
               >
                 <PhCopy/>
               </Button>
+              {{message.created}}
+              {{new Date(message.created).toISOString()}}
             </CardFooter>
           </Card>
         </div>
       </ScrollArea>
-      <div class="bg-white w-full">
+      <div class="bg-background w-full">
           <div class="relative w-full items-center pb-3">
             <Textarea
               placeholder="Ask me anything..."
@@ -78,17 +79,31 @@ import {ScrollArea} from "@/components/ui/scroll-area";
 import {queryHuggingFace} from "@/lib/huggingface.ts";
 import { toast } from "vue-sonner";
 import type {Message} from "@/lib/models.ts";
+import { marked } from "marked";
 
 const value = ref('');
 const messages = ref([] as Message[]);
 
-const copyToClipboard = (message: string) => {
-  console.log(message);
-  toast("Copied!", {});
+const copyToClipboard = (text: string) => {
+  navigator.clipboard.writeText(text).then(function() {
+    toast("Copied!", {});
+  }, function(err) {
+    toast("Error!", {description: err});
+  });
 }
 
 const askQuestion = async () => {
+  messages.value.push({
+    content: value.value,
+    created: new Date().getTime(),
+    role: 'user'
+  });
   const res = await queryHuggingFace(value.value);
   console.log(res);
+  messages.value.push({
+    content: res.choices[0].message.content,
+    created: res.created,
+    role: res.choices[0].message.role
+  });
 };
 </script>

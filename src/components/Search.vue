@@ -1,8 +1,8 @@
 <template>
   <Combobox by="label">
     <ComboboxAnchor class="w-full">
-      <div class="relative w-full max-w-sm items-center">
-        <ComboboxInput placeholder="Search chat..."/>
+      <div class="relative w-full max-w-sm items-center border-input rounded-md border-1">
+        <ComboboxInput placeholder="Search for chat..." />
         <span class="absolute start-0 inset-y-0 flex items-center justify-center px-3">
           <PhMagnifyingGlass class="size-4 text-muted-foreground" />
         </span>

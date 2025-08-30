@@ -1,6 +1,7 @@
 export interface Message {
-  text: string;
-  type: string;
+  content: string;
+  role: string;
+  created: number;
 }
 
 export interface Config {
