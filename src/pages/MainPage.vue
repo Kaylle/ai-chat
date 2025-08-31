@@ -3,7 +3,7 @@
     <main class="flex flex-1 flex-col">
       <ScrollArea class="w-full px-4" style="height: calc(100vh - 240px)">
         <div
-          v-if="useChats().chats.find(x=>x.id===useChats().currentChatId).messages.length === 0"
+          v-if="chatMessages.length === 0"
           class="flex flex-col gap-2 text-center justify-center"
           style="height: calc(100vh - 240px)"
         >
@@ -16,7 +16,7 @@
         </div>
         <div class="flex flex-col gap-4 pb-4">
           <Card
-            v-for="message in useChats().chats.find(x=>x.id===useChats().currentChatId).messages"
+            v-for="message in chatMessages.messages"
             :key="message.content"
             class="w-auto max-w-[60vw]"
             :class="message.role==='user'?'mr-auto':'bg-accent ml-auto'"
@@ -86,7 +86,7 @@
 
 <script setup lang="ts">
 import { Textarea } from "@/components/ui/textarea";
-import { ref, watch } from "vue";
+import {computed, ref, watch} from "vue";
 import { PhCopy, PhHandWaving, PhPaperclip, PhPaperPlaneTilt, PhWaveform } from "@phosphor-icons/vue";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
@@ -106,6 +106,12 @@ const { enter, shift } = useMagicKeys({
       e.preventDefault();
   }
 });
+
+const chatMessages = computed(() => {
+  const currentChat = useChats().chats.find(x=>x.id===useChats().currentChatId)
+  if (!currentChat) return [];
+  else return currentChat.messages;
+})
 
 watch(enter, async (pressed, prev) => {
   if (pressed && !prev) {
