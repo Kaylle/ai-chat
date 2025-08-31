@@ -4,7 +4,7 @@
       <Search />
     </SidebarHeader>
     <SidebarContent>
-      <SidebarGroup>
+      <SidebarGroup v-if="useChats().chats.filter(x=>x.isPinned).length > 0">
         <SidebarGroupContent>
           <SidebarMenu>
             <SidebarGroupLabel>
@@ -13,13 +13,13 @@
             </SidebarGroupLabel>
             <SidebarMenu>
               <SidebarMenuItem
-                v-for="(nav, indexGroup) in navMenu"
-                :key="indexGroup"
+                v-for="chat in useChats().chats.filter(x=>x.isPinned)"
+                :key="chat.id"
               >
                 <SidebarMenuButton>
-                  {{ nav.title }}
+                  {{ chat.title }}
                   <PhPushPinSlash
-                    @click="unpinChat"
+                    @click="useChats().pinChat(chat.id)"
                     class="ml-auto"
                   />
                 </SidebarMenuButton>
@@ -38,30 +38,46 @@
             </SidebarGroupLabel>
             <SidebarMenu>
               <Collapsible
-                v-for="group in new Set(navMenu.map(x => x.group))"
-                :key="group"
+                v-for="(group, i) in useChats().getFolders()"
+                :key="i"
                 defaultOpen
                 class="group/collapsible"
               >
                 <SidebarMenuItem>
                   <CollapsibleTrigger asChild>
                     <SidebarMenuButton>
-                      {{ group }}
-                      <PhCaretUp/>
+                      <div>
+                        {{ group!=='default' ? formatDate(new Date(Number(group)), "YYYY/MM/DD") : 'Default' }}
+                      </div>
+                      <PhCaretUp class="ml-auto" />
                     </SidebarMenuButton>
                   </CollapsibleTrigger>
                   <CollapsibleContent>
                     <SidebarMenuSub>
                       <SidebarMenuSubItem
-                        v-for="(nav, indexGroup) in navMenu.filter(x => x.group === group)"
-                        :key="indexGroup"
+                        class="rounded-lg"
+                        @click="useChats().currentChatId = chat.id"
+                        v-for="chat in useChats().chats.filter(x=>test(x.id)===group)"
+                        :key="chat.id"
+                        :class="useChats().currentChatId === chat.id?'bg-accent':''"
                       >
-                        <SidebarMenuButton>
-                          {{ nav.title }}
-                        </SidebarMenuButton>
-                        <SidebarMenuAction @click="deleteChat(nav.url)">
-                          <PhDotsThree/>
-                        </SidebarMenuAction>
+                        <ContextMenu>
+                          <ContextMenuTrigger>
+                            <SidebarMenuButton>
+                              {{ chat.title }}
+                            </SidebarMenuButton>
+                          </ContextMenuTrigger>
+                          <ContextMenuContent class="w-39">
+                            <ContextMenuItem inset @click="useChats().deleteChat(chat.id)">
+                              Delete
+                              <PhTrash class="ml-auto"/>
+                            </ContextMenuItem>
+                            <ContextMenuItem inset @click="useChats().pinChat(chat.id)">
+                              Pin chat
+                              <PhPushPin class="ml-auto"/>
+                            </ContextMenuItem>
+                          </ContextMenuContent>
+                        </ContextMenu>
                       </SidebarMenuSubItem>
                     </SidebarMenuSub>
                   </CollapsibleContent>
@@ -76,7 +92,10 @@
     <SidebarFooter>
       <SidebarMenu>
         <SidebarMenuItem>
-          <Button class="w-full">
+          <Button
+            class="w-full"
+            @click="useChats().addChat('New Chat')"
+          >
             <PhPlus />
             New chat
             <PhSparkle />
@@ -88,25 +107,30 @@
 </template>
 
 <script setup lang="ts">
-import { SidebarGroupLabel, Sidebar, SidebarContent, SidebarGroup, SidebarHeader, SidebarRail, SidebarGroupContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "./ui/sidebar";
-import { navMenu } from "@/lib/constants.ts";
+import { SidebarGroupLabel, Sidebar, SidebarContent, SidebarGroup, SidebarHeader, SidebarRail, SidebarGroupContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarMenuSub, SidebarMenuSubItem, SidebarSeparator } from "./ui/sidebar";
 import Search from "@/components/Search.vue";
 import { Button } from "@/components/ui/button";
-import {PhCaretUp, PhChatDots, PhDotsThree, PhHeart, PhPlus, PhPushPinSlash, PhSparkle} from "@phosphor-icons/vue";
 import {
-  SidebarFooter,
-  SidebarMenuAction,
-  SidebarMenuSub,
-  SidebarMenuSubItem,
-  SidebarSeparator
-} from "@/components/ui/sidebar";
-import {Collapsible, CollapsibleTrigger, CollapsibleContent} from "@/components/ui/collapsible";
+  PhCaretUp,
+  PhChatDots,
+  PhHeart,
+  PhPlus, PhPushPin,
+  PhPushPinSlash,
+  PhSparkle,
+  PhTrash
+} from "@phosphor-icons/vue";
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
+import { useChats } from "@/stores/chat.ts";
+import { ContextMenu, ContextMenuTrigger, ContextMenuContent, ContextMenuItem } from "@/components/ui/context-menu";
+import { formatDate } from "@vueuse/core";
 
-const deleteChat = (id: string) => {
-  console.log(id);
+const test = (date: string) => {
+  if (date === 'default') return "default";
+  const d = new Date(Number(date));
+  d.setHours(0);
+  d.setMinutes(0);
+  d.setSeconds(0);
+  d.setMilliseconds(0);
+  return d.getTime().toString();
 };
-
-const unpinChat = () => {
-  console.log('id');
-}
 </script>

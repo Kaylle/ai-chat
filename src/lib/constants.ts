@@ -1,27 +1,5 @@
 import type { Theme } from "./models.ts";
 
-export const navMenu = [
-  {
-    title: "Weather in California",
-    url: "/",
-    group: 'Yesterday'
-  },
-  {
-    title: "Dress for weading",
-    url: "/w",
-    group: 'Yesterday'
-  },
-  {
-    title: "Resume for work in LA",
-    url: "/settingsw",
-    group: 'Jule 25'
-  },
-  {
-    title: "Testing my project",
-    url: "/settings",
-    group: 'Jule 25'
-  }
-];
 
 export const themes = [
   {

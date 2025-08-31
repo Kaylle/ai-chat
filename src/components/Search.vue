@@ -14,12 +14,12 @@
       </ComboboxEmpty>
       <ComboboxGroup>
         <ComboboxItem
-          @select="$emit('chat', chat)"
-          v-for="chat in chats"
-          :key="chat.value"
+          @select="useChats().currentChatId = chat.id"
+          v-for="chat in useChats().chats"
+          :key="chat.id"
           :value="chat"
         >
-          {{ chat.label }}
+          {{ chat.title }}
         </ComboboxItem>
       </ComboboxGroup>
     </ComboboxList>
@@ -29,11 +29,5 @@
 <script setup lang="ts">
 import { PhMagnifyingGlass } from "@phosphor-icons/vue";
 import { ComboboxList, Combobox, ComboboxInput, ComboboxGroup, ComboboxItem, ComboboxAnchor, ComboboxEmpty } from "@/components/ui/combobox";
-
-const chats = [
-  { value: 'next.js', label: 'Next.js' },
-  { value: 'nuxt.js', label: 'Nuxt.js' },
-  { value: 'remix', label: 'Remix' },
-  { value: 'astro', label: 'Astro' }
-]
+import {useChats} from "@/stores/chat.ts";
 </script>

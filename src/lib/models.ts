@@ -4,6 +4,13 @@ export interface Message {
   created: number;
 }
 
+export interface ChatSession {
+  id: string;
+  title: string;
+  messages: Message[];
+  isPinned: boolean;
+}
+
 export interface Config {
   theme?: string;
   radius: number;
