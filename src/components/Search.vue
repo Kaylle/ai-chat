@@ -29,5 +29,5 @@
 <script setup lang="ts">
 import { PhMagnifyingGlass } from "@phosphor-icons/vue";
 import { ComboboxList, Combobox, ComboboxInput, ComboboxGroup, ComboboxItem, ComboboxAnchor, ComboboxEmpty } from "@/components/ui/combobox";
-import {useChats} from "@/stores/chat.ts";
+import { useChats } from "@/stores/chat.ts";
 </script>

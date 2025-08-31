@@ -12,6 +12,11 @@ export const useChats = defineStore('chat', () => {
 
   const currentChatId = ref("default");
 
+  function getChats() {
+    const res = localStorage.getItem("chats");
+    if (res) chats.value = JSON.parse(res);
+  }
+
   function getFolders() {
     const allFolders = chats.value.map(x=>x.id);
     const folders = [
@@ -39,6 +44,7 @@ export const useChats = defineStore('chat', () => {
     };
     chats.value.push(newChat);
     currentChatId.value = newChat.id;
+    localStorage.setItem("chats", JSON.stringify(chats.value));
   }
 
   function deleteChat(id: string) {
@@ -46,12 +52,14 @@ export const useChats = defineStore('chat', () => {
       currentChatId.value = "default";
     const i = chats.value.findIndex(x=>x.id === id);
     chats.value.splice(i, 1);
+    localStorage.setItem("chats", JSON.stringify(chats.value));
   }
 
   function pinChat(id: string) {
     const chat = chats.value.find(x=>x.id === id);
     if (chat)
       chat.isPinned = !chat.isPinned;
+    localStorage.setItem("chats", JSON.stringify(chats.value));
   }
 
   async function queryHuggingFace(prompt: Message) {
@@ -82,8 +90,9 @@ export const useChats = defineStore('chat', () => {
         created: new Date().getTime(),
         role: res.choices[0].message.role
       });
+      localStorage.setItem("chats", JSON.stringify(chats.value));
     }
   }
 
-  return { chats, currentChatId, getFolders, addChat, queryHuggingFace, deleteChat, pinChat };
+  return { chats, currentChatId, getChats, getFolders, addChat, queryHuggingFace, deleteChat, pinChat };
 })

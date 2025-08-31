@@ -10,6 +10,7 @@ import { Toaster } from "./components/ui/sonner";
 import { onMounted } from "vue";
 import { useCustomize } from "./lib/useCustomize.ts";
 import { useColorMode } from "@vueuse/core";
+import {useChats} from "@/stores/chat.ts";
 
 const { theme, radius } = useCustomize();
 const colorMode = useColorMode();
@@ -19,5 +20,6 @@ onMounted(() => {
   document.body.classList.remove(...themes.map(color => `theme-${color.name}`));
   document.body.classList.add(`theme-${theme.value}`);
   console.log(colorMode);
+  useChats().getChats();
 })
 </script>
