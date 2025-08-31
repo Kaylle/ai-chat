@@ -16,7 +16,7 @@
         </div>
         <div class="flex flex-col gap-4 pb-4">
           <Card
-            v-for="message in chatMessages.messages"
+            v-for="message in chatMessages"
             :key="message.content"
             class="w-auto max-w-[60vw]"
             :class="message.role==='user'?'mr-auto':'bg-accent ml-auto'"
