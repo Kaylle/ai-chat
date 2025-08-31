@@ -90,6 +90,34 @@ export const useChats = defineStore('chat', () => {
         created: new Date().getTime(),
         role: res.choices[0].message.role
       });
+      console.log(chat.messages.length)
+      if (chat.messages.length === 2) {
+        await fetch(
+          "https://router.huggingface.co/v1/chat/completions",
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${import.meta.env.VITE_HF_API_KEY}`,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              messages: [{
+                role: 'user',
+                content: `generate short title (25 symbols) for this message:${prompt.content}`,
+              }],
+              model: import.meta.env.VITE_HF_MODEL
+            })
+          }
+        )
+          .then(response => {
+            if (!response.ok)
+              throw new Error(`HTTP error! status: ${response.status}`);
+            return response.json();
+          })
+          .then(data => {
+            chat.title = data.choices[0].message.content;
+          });
+      }
       localStorage.setItem("chats", JSON.stringify(chats.value));
     }
   }
